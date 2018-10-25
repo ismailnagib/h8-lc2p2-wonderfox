@@ -14,11 +14,11 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item px-2">
+          <li class="nav-item px-4">
             <router-link to="/">Home</router-link>
           </li>
-          <li class="nav-item">
-              <router-link to="/about">About</router-link>
+          <li class="nav-item" v-if='signedIn'>
+              <router-link to="/liked">Liked Videos <span style="background-color: blue; padding: 2.5px 5px">{{ likedVideos.length }}</span></router-link>
           </li>
         </ul>
         <ul class="navbar-nav ml-auto">
@@ -40,7 +40,7 @@
 <script>
 import axios from 'axios'
 import store from '@/store'
-import { mapMutations, mapState } from 'vuex'
+import { mapMutations, mapState, mapActions } from 'vuex'
 
 export default {
   name: 'navbar',
@@ -52,7 +52,8 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['mutateSignedIn']),
+    ...mapMutations(['mutateSignedIn', 'mutateLikedVideos']),
+    ...mapActions(['updateLikedVideos']),
     login () {
       axios({
         url: 'http://localhost:3000/users/login',
@@ -66,6 +67,7 @@ export default {
         this.notice = ''
         localStorage.setItem('token', data.data.token)
         this.mutateSignedIn(true)
+        this.updateLikedVideos()
       })
       .catch(err => {
         this.notice = err.response.data.message
@@ -78,8 +80,9 @@ export default {
           token: localStorage.getItem('token')
         }
       })
-      .then(() => {
+      .then(data => {
         this.mutateSignedIn(true)
+        this.updateLikedVideos()
       })
       .catch(err => {
         this.mutateSignedIn(false)
@@ -96,7 +99,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['signedIn'])
+    ...mapState(['signedIn', 'likedVideos'])
   }
 }
 </script>

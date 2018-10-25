@@ -10,10 +10,9 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
-    likedVideos: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Videos' 
-    }]
+    likedVideos: {
+        type: Array, 
+    }
 }, {
     timestamps: true
 });
